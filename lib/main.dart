@@ -42,7 +42,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           title: const Row(
             children: [
-              Icon(Icons.person, color: Colors.blue),
+              Icon(Icons.person, color: Colors.blueAccent),
               SizedBox(width: 8),
               Text('Profile Details'),
             ],
@@ -110,7 +110,7 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
               Card(
@@ -122,11 +122,14 @@ class ProfileScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      const CircleAvatar(
-                        radius: 55,
-                        backgroundColor: Colors.blueGrey,
-                        backgroundImage: NetworkImage(
-                          "https://i.pravatar.cc/300?img=12",
+                      GestureDetector(
+                        onTap: () => _showProfileDialog(context),
+                        child: CircleAvatar(
+                          radius: 55,
+                          backgroundColor: Colors.blueGrey,
+                          backgroundImage: const AssetImage(
+                            'assets/images/avatar.jpg',
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -164,29 +167,35 @@ class ProfileScreen extends StatelessWidget {
                       _contactRow(Icons.phone, phone),
                       const SizedBox(height: 24),
 
-                      Row(
-                        children: [
-                          const Expanded(child: FollowButton()),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: () => _showProfileDialog(context),
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 14,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        child: Row(
+                          children: [
+                            const Expanded(child: FollowButton()),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: () {},
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  side: const BorderSide(
+                                    color: Colors.black,
+                                    width: 0.5,
+                                  ),
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                                child: const Text(
+                                  'Message',
+                                  style: TextStyle(color: Colors.black),
                                 ),
-                                side: const BorderSide(color: Colors.black),
-                              ),
-                              child: const Text(
-                                'Message',
-                                style: TextStyle(color: Colors.black),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -197,6 +206,7 @@ class ProfileScreen extends StatelessWidget {
               Row(
                 children: const [
                   Expanded(child: Divider(thickness: 1)),
+                  SizedBox(width: 12),
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 12),
                     child: Text(
@@ -207,6 +217,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                  SizedBox(width: 12),
                   Expanded(child: Divider(thickness: 1)),
                 ],
               ),
@@ -218,8 +229,7 @@ class ProfileScreen extends StatelessWidget {
                 children: const [
                   Expanded(
                     child: InterestCard(
-                      imgUrl:
-                          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400',
+                      imagePath: 'assets/images/beach.jpg',
                       title: "Travel",
                       description: 'Exploring new places around the world',
                     ),
@@ -227,8 +237,7 @@ class ProfileScreen extends StatelessWidget {
                   SizedBox(width: 12),
                   Expanded(
                     child: InterestCard(
-                      imgUrl:
-                          'https://images.unsplash.com/photo-1606980636608-3b62a0d99a31?w=400',
+                      imagePath: 'assets/images/dslr.jpg',
                       title: 'Photography',
                       description: 'Capturing moments through the lens',
                     ),
@@ -290,7 +299,9 @@ class _FollowButtonState extends State<FollowButton> {
     return ElevatedButton(
       onPressed: _handleFollowTap,
       style: ElevatedButton.styleFrom(
-        backgroundColor: _isFollowing ? Colors.grey.shade300 : Colors.blue,
+        backgroundColor: _isFollowing
+            ? Colors.grey.shade300
+            : Colors.blueAccent,
         foregroundColor: _isFollowing ? Colors.black87 : Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -305,13 +316,13 @@ class _FollowButtonState extends State<FollowButton> {
 }
 
 class InterestCard extends StatelessWidget {
-  final String imgUrl;
+  final String imagePath;
   final String title;
   final String description;
 
   const InterestCard({
     super.key,
-    required this.imgUrl,
+    required this.imagePath,
     required this.title,
     required this.description,
   });
@@ -337,12 +348,12 @@ class InterestCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AspectRatio(
-            aspectRatio: 16 / 20,
-            child: Image.network(
-              imgUrl,
+            aspectRatio: 16 / 8,
+            child: Image.asset(
+              imagePath,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) => Container(
-                color: Colors.grey.shade300,
+                color: Colors.grey[300],
                 child: const Icon(
                   Icons.image_not_supported_outlined,
                   color: Colors.grey,
@@ -365,21 +376,27 @@ class InterestCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
 
+                Text(description, style: const TextStyle(fontSize: 11)),
+
+                const SizedBox(height: 4),
+
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
                     onPressed: () => _handleViewMore(context),
                     style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.grey.shade200,
+                      side: const BorderSide(width: 0.5, color: Colors.grey),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 8),
                     ),
                     child: const Text(
                       "View More",
                       style: TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.w600,
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.bold,
                         fontSize: 13,
                       ),
                     ),
